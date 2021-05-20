@@ -101,9 +101,9 @@ http_archive(
         "//java:rules_jvm_external_javadoc.patch",
         "//java:rules_jvm_external_visibility.patch",
     ],
-    sha256 = "3631082609854e0e7c28c6cdc06708eceda15816f5ff3153f84da7932e3e428c",
-    strip_prefix = "rules_jvm_external-c0a8a3ea3fed24a66eade21015249ed5ed99bf65",
-    url = "https://github.com/bazelbuild/rules_jvm_external/archive/c0a8a3ea3fed24a66eade21015249ed5ed99bf65.zip",
+    sha256 = "3d00a53394e0e856f6a97fab75855a3fd6552190ca004f79bfac0cbfd3c1e5d1",
+    strip_prefix = "rules_jvm_external-786947c47918c44b5d740df500bb3090607df04d",
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/786947c47918c44b5d740df500bb3090607df04d.zip",
 )
 
 load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
@@ -137,8 +137,8 @@ selenium_register_dotnet()
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "65067dcad93a61deb593be7d3d9a32a4577d09665536d8da536d731da5cd15e2",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.4.2/rules_nodejs-3.4.2.tar.gz"],
+    sha256 = "10f534e1c80f795cffe1f2822becd4897754d18564612510c59b3c73544ae7c6",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.5.0/rules_nodejs-3.5.0.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
@@ -253,3 +253,33 @@ k8s_defaults(
 load("//common:repositories.bzl", "pin_browsers")
 
 pin_browsers()
+
+http_archive(
+    name = "coinbase_rules_ruby",
+    sha256 = "f83da569318a6af9f1bd2d320d747c6717e4f8a1d30eb7f9d4e793939b62144e",
+    strip_prefix = "rules_ruby-4239b06d1af6c9f036a74e2c6c61213d5f19e487",
+    url = "https://github.com/p0deje/rules_ruby/archive/4239b06d1af6c9f036a74e2c6c61213d5f19e487.tar.gz",
+)
+
+load(
+    "@coinbase_rules_ruby//ruby:deps.bzl",
+    "rules_ruby_dependencies",
+    "ruby_register_toolchains",
+)
+
+rules_ruby_dependencies()
+ruby_register_toolchains()
+
+load("@coinbase_rules_ruby//ruby:defs.bzl", "rb_bundle")
+
+rb_bundle(
+    name = "bundle",
+    bundler_version = "2.1.4",
+    gemfile = "//:rb/Gemfile",
+    srcs = [
+        "//:rb/lib/selenium/devtools/version.rb",
+        "//:rb/lib/selenium/webdriver/version.rb",
+        "//:rb/selenium-devtools.gemspec",
+        "//:rb/selenium-webdriver.gemspec",
+    ]
+)

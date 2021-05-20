@@ -20,7 +20,9 @@ package org.openqa.selenium.grid.distributor.local;
 import org.junit.Test;
 import org.openqa.selenium.events.EventBus;
 import org.openqa.selenium.events.local.GuavaEventBus;
+import org.openqa.selenium.grid.data.DefaultSlotMatcher;
 import org.openqa.selenium.grid.distributor.Distributor;
+import org.openqa.selenium.grid.distributor.selector.DefaultSlotSelector;
 import org.openqa.selenium.grid.security.Secret;
 import org.openqa.selenium.grid.sessionmap.SessionMap;
 import org.openqa.selenium.grid.sessionmap.local.LocalSessionMap;
@@ -42,6 +44,7 @@ public class GridModelTest {
   LocalNewSessionQueue queue = new LocalNewSessionQueue(
     tracer,
     events,
+    new DefaultSlotMatcher(),
     Duration.ofSeconds(2),
     Duration.ofSeconds(2),
     secret);
@@ -51,6 +54,7 @@ public class GridModelTest {
     clientFactory,
     sessions,
     queue,
+    new DefaultSlotSelector(),
     secret,
     Duration.ofMinutes(5));
 

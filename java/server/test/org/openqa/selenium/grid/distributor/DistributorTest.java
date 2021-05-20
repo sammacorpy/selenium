@@ -34,15 +34,18 @@ import org.openqa.selenium.events.local.GuavaEventBus;
 import org.openqa.selenium.grid.data.Availability;
 import org.openqa.selenium.grid.data.CreateSessionRequest;
 import org.openqa.selenium.grid.data.CreateSessionResponse;
+import org.openqa.selenium.grid.data.DefaultSlotMatcher;
 import org.openqa.selenium.grid.data.DistributorStatus;
 import org.openqa.selenium.grid.data.NodeDrainComplete;
 import org.openqa.selenium.grid.data.NodeHeartBeatEvent;
 import org.openqa.selenium.grid.data.NodeStatus;
 import org.openqa.selenium.grid.data.RequestId;
 import org.openqa.selenium.grid.data.Session;
+import org.openqa.selenium.grid.data.SessionRequest;
 import org.openqa.selenium.grid.data.Slot;
 import org.openqa.selenium.grid.distributor.local.LocalDistributor;
 import org.openqa.selenium.grid.distributor.remote.RemoteDistributor;
+import org.openqa.selenium.grid.distributor.selector.DefaultSlotSelector;
 import org.openqa.selenium.grid.node.HealthCheck;
 import org.openqa.selenium.grid.node.Node;
 import org.openqa.selenium.grid.node.local.LocalNode;
@@ -50,7 +53,6 @@ import org.openqa.selenium.grid.security.Secret;
 import org.openqa.selenium.grid.sessionmap.SessionMap;
 import org.openqa.selenium.grid.sessionmap.local.LocalSessionMap;
 import org.openqa.selenium.grid.sessionqueue.NewSessionQueue;
-import org.openqa.selenium.grid.data.SessionRequest;
 import org.openqa.selenium.grid.sessionqueue.local.LocalNewSessionQueue;
 import org.openqa.selenium.grid.testing.EitherAssert;
 import org.openqa.selenium.grid.testing.PassthroughHttpClient;
@@ -123,6 +125,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -132,6 +135,7 @@ public class DistributorTest {
       HttpClient.Factory.createDefault(),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     stereotype = new ImmutableCapabilities("browserName", "cheese");
@@ -151,6 +155,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -167,6 +172,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -198,6 +204,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -213,6 +220,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -235,6 +243,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -251,6 +260,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -274,6 +284,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -290,6 +301,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     Distributor distributor = new RemoteDistributor(
@@ -311,6 +323,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -326,6 +339,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -343,6 +357,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -361,6 +376,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -372,7 +388,7 @@ public class DistributorTest {
 
     assertThat(latch.getCount()).isEqualTo(0);
 
-    assertThat(distributor.getAvailableNodes().size()).isEqualTo(0);
+    assertThat(distributor.getStatus().getNodes()).isEmpty();
 
     Either<SessionNotCreatedException, CreateSessionResponse> result =
       distributor.newSession(createRequest(caps));
@@ -385,6 +401,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -403,6 +420,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -418,7 +436,7 @@ public class DistributorTest {
 
     assertThat(latch.getCount()).isEqualTo(1);
 
-    assertThat(distributor.getAvailableNodes().size()).isEqualTo(1);
+    assertThat(distributor.getStatus().getNodes().size()).isEqualTo(1);
   }
 
   @Test
@@ -427,6 +445,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -448,6 +467,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -461,7 +481,7 @@ public class DistributorTest {
 
     distributor.drain(node.getId());
 
-    assertThat(distributor.getAvailableNodes().size()).isEqualTo(1);
+    assertThat(distributor.getStatus().getNodes().size()).isEqualTo(1);
 
     node.stop(firstResponse.right().getSession().getId());
     node.stop(secondResponse.right().getSession().getId());
@@ -469,7 +489,7 @@ public class DistributorTest {
     latch.await(5, TimeUnit.SECONDS);
 
     assertThat(latch.getCount()).isEqualTo(0);
-    assertThat(distributor.getAvailableNodes().size()).isEqualTo(0);
+    assertThat(distributor.getStatus().getNodes()).isEmpty();
   }
 
   @Test
@@ -498,6 +518,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -518,6 +539,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(handler),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5))
       .add(heavy)
@@ -541,6 +563,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -556,6 +579,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(handler),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5))
       .add(leastRecent);
@@ -616,6 +640,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -645,6 +670,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(handler),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     handler.addHandler(distributor);
@@ -668,6 +694,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -682,6 +709,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
 
@@ -704,6 +732,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -719,6 +748,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -726,12 +756,13 @@ public class DistributorTest {
 
     // Use up the one slot available
     Session session;
-    Either<SessionNotCreatedException, CreateSessionResponse> result =
-      distributor.newSession(createRequest(caps));
+    Either<SessionNotCreatedException, CreateSessionResponse> result = distributor.newSession(createRequest(caps));
     assertThatEither(result).isRight();
     session = result.right().getSession();
     // Make sure the session map has the session
     sessions.get(session.getId());
+
+    Session argleBlarg = sessions.get(session.getId());
 
     node.stop(session.getId());
     // Now wait for the session map to say the session is gone.
@@ -759,6 +790,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -770,6 +802,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(handler),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     handler.addHandler(distributor);
@@ -791,6 +824,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -807,6 +841,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(node),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(node);
@@ -829,6 +864,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -849,6 +885,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(handler),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     handler.addHandler(distributor);
@@ -900,6 +937,7 @@ public class DistributorTest {
     NewSessionQueue queue = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -910,6 +948,7 @@ public class DistributorTest {
       new PassthroughHttpClient.Factory(handler),
       sessions,
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     handler.addHandler(distributor);
@@ -987,6 +1026,15 @@ public class DistributorTest {
     return node;
   }
 
+  private Node createBrokenNode(Capabilities stereotype) {
+    URI uri = createUri();
+    return LocalNode.builder(tracer, bus, uri, uri, registrationSecret)
+      .add(
+        stereotype,
+        new TestSessionFactory(stereotype, (id, caps) -> {throw new SessionNotCreatedException("Surprise!");}))
+      .build();
+  }
+
   @Test
   @Ignore
   public void shouldCorrectlySetSessionCountsWhenStartedAfterNodeWithSession() {
@@ -1032,6 +1080,56 @@ public class DistributorTest {
 
     DistributorStatus status = local.getStatus();
     assertFalse(status.hasCapacity());
+  }
+
+  @Test
+  public void shouldFallbackToSecondAvailableCapabilitiesIfFirstNotAvailable() {
+    local.add(createNode(new ImmutableCapabilities("browserName", "not cheese"), 1, 1));
+    local.add(createNode(new ImmutableCapabilities("browserName", "cheese"), 1, 0));
+    waitToHaveCapacity(local);
+
+    SessionRequest sessionRequest = new SessionRequest(
+      new RequestId(UUID.randomUUID()),
+      Instant.now(),
+      Set.of(W3C),
+      // Insertion order is assumed to be preserved
+        ImmutableSet.of(
+            // There's no capacity for this
+              new ImmutableCapabilities("browserName", "not cheese"),
+            // But there is for this, so we expect this to be created.
+              new ImmutableCapabilities("browserName", "cheese")),
+      Map.of());
+
+    Either<SessionNotCreatedException, CreateSessionResponse> result = local.newSession(sessionRequest);
+
+    assertThat(result.isRight()).isTrue();
+    Capabilities seen = result.right().getSession().getCapabilities();
+    assertThat(seen.getBrowserName()).isEqualTo("cheese");
+  }
+
+  @Test
+  public void shouldFallbackToSecondAvailableCapabilitiesIfFirstThrowsOnCreation() {
+    local.add(createBrokenNode(new ImmutableCapabilities("browserName", "not cheese")));
+    local.add(createNode(new ImmutableCapabilities("browserName", "cheese"), 1, 0));
+    waitToHaveCapacity(local);
+
+    SessionRequest sessionRequest = new SessionRequest(
+      new RequestId(UUID.randomUUID()),
+      Instant.now(),
+      Set.of(W3C),
+      // Insertion order is assumed to be preserved
+        ImmutableSet.of(
+            // There's no capacity for this
+              new ImmutableCapabilities("browserName", "not cheese"),
+            // But there is for this, so we expect this to be created.
+              new ImmutableCapabilities("browserName", "cheese")),
+      Map.of());
+
+    Either<SessionNotCreatedException, CreateSessionResponse> result = local.newSession(sessionRequest);
+
+    assertThat(result.isRight()).isTrue();
+    Capabilities seen = result.right().getSession().getCapabilities();
+    assertThat(seen.getBrowserName()).isEqualTo("cheese");
   }
 
   private SessionRequest createRequest(Capabilities... allCaps) {

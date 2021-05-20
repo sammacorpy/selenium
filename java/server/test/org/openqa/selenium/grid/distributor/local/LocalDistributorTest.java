@@ -25,12 +25,14 @@ import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.events.EventBus;
 import org.openqa.selenium.events.local.GuavaEventBus;
 import org.openqa.selenium.grid.data.CreateSessionResponse;
+import org.openqa.selenium.grid.data.DefaultSlotMatcher;
 import org.openqa.selenium.grid.data.DistributorStatus;
 import org.openqa.selenium.grid.data.NodeStatus;
 import org.openqa.selenium.grid.data.NodeStatusEvent;
 import org.openqa.selenium.grid.data.RequestId;
 import org.openqa.selenium.grid.data.Session;
 import org.openqa.selenium.grid.distributor.Distributor;
+import org.openqa.selenium.grid.distributor.selector.DefaultSlotSelector;
 import org.openqa.selenium.grid.node.Node;
 import org.openqa.selenium.grid.node.local.LocalNode;
 import org.openqa.selenium.grid.security.Secret;
@@ -99,6 +101,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -108,6 +111,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(localNode);
@@ -129,6 +133,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -138,6 +143,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       secret,
       Duration.ofMinutes(5));
     bus.fire(new NodeStatusEvent(localNode.getStatus()));
@@ -153,6 +159,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -162,6 +169,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(localNode);
@@ -183,6 +191,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -192,6 +201,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(localNode);
@@ -208,6 +218,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -217,6 +228,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
 
@@ -286,6 +298,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -295,6 +308,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(localNode);
@@ -323,6 +337,7 @@ public class LocalDistributorTest {
     NewSessionQueue queue  = new LocalNewSessionQueue(
       tracer,
       bus,
+      new DefaultSlotMatcher(),
       Duration.ofSeconds(2),
       Duration.ofSeconds(2),
       registrationSecret);
@@ -332,6 +347,7 @@ public class LocalDistributorTest {
       clientFactory,
       new LocalSessionMap(tracer, bus),
       queue,
+      new DefaultSlotSelector(),
       registrationSecret,
       Duration.ofMinutes(5));
     distributor.add(localNode);
@@ -339,7 +355,6 @@ public class LocalDistributorTest {
     localNode.drain();
     assertThat(localNode.isDraining()).isTrue();
   }
-
 
   private class Handler extends Session implements HttpHandler {
 
